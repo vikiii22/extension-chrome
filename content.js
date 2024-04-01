@@ -26,25 +26,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             context.drawImage(videoElement, 0, 0, playerWidth, playerHeight);
 
             var img = new Image();
-            img.src = canvas.toDataURL(); // Convierte el contenido del canvas a una imagen base64
+            img.src = canvas.toDataURL();
 
-            // Aplicar OCR al contenido de la imagen utilizando una biblioteca de OCR como Tesseract.js
-            /*  Tesseract.recognize(
-                 img,
-                 'eng',
-                 { logger: m => console.log(m) }
-             ).then(({ data: { text } }) => {
-                 sendResponse({ text: text });
-             }).catch(err => {
-                 console.error('Error al aplicar OCR:', err);
-                 sendResponse({ text: 'Error al aplicar OCR' });
-             }); */
+            /* Tesseract.recognize(
+                img,
+                'eng',
+                { logger: m => console.log(m) }
+            ).then(({ data: { text } }) => {
+                sendResponse({ text: text });
+            }).catch(err => {
+                console.error('Error al aplicar OCR:', err);
+                sendResponse({ text: 'Error al aplicar OCR' });
+            }); */
 
             console.log(img.src);
 
             sendResponse({ text: 'Texto extraído del video' });
         } else {
-            // Si no se encontró un elemento de video, enviar una respuesta indicando que no se encontró ningún video
             sendResponse({ text: 'No se encontró ningún video' });
         }
     } else {
