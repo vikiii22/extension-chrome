@@ -1,3 +1,5 @@
+'use strict';
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === 'extractText') {
         var videoElement = document.querySelector('video');
@@ -28,20 +30,29 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             var img = new Image();
             img.src = canvas.toDataURL();
 
-            /* Tesseract.recognize(
-                img,
-                'eng',
-                { logger: m => console.log(m) }
-            ).then(({ data: { text } }) => {
-                sendResponse({ text: text });
-            }).catch(err => {
-                console.error('Error al aplicar OCR:', err);
-                sendResponse({ text: 'Error al aplicar OCR' });
-            }); */
+            console.log(img.src)
 
-            console.log(img.src);
-
-            sendResponse({ text: 'Texto extraído del video' });
+            var script = document.createElement('script');
+            script.src = chrome.runtime.getURL('lib/tesseract.min.js');
+            console.log(script.src)
+            script.onload = function() {
+                console.log('Tesseract loaded');
+                Tesseract.recognize(
+                    img.src,
+                    'eng',
+                    { logger: m => console.log(m) }
+                ).then(({ data: { text } }) => {
+                    sendResponse({ text: text });
+                }).catch(error => {
+                    console.error('Error al extraer texto:', error);
+                    sendResponse({ text: 'Error al extraer texto del video.' });
+                });
+            };
+            document.body.appendChild(script);
+            script.onerror = function() {
+                console.error('Error al cargar Tesseract');
+                sendResponse({ text: 'Error al cargar Tesseract' });
+            };
         } else {
             sendResponse({ text: 'No se encontró ningún video' });
         }
